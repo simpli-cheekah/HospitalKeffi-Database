@@ -32,15 +32,15 @@ The existing Excel system at General Hospital Keffi suffers from three critical 
 
 The database contains 5 tables designed to reflect how the hospital actually operates:
 
+```
 Patients ──────┐
-
                ├──► Visits ──────► Diagnoses
 Wards ─────────┤
-
                │
 Staff ─────────┘
-
 Wards ────────────► Staff
+```
+
 ### Tables
 
 | Table | Description | Rows (Test Data) |
