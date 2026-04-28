@@ -107,18 +107,18 @@ In Excel, "Malaria" and "malaria fever" are treated as different illnesses. In t
 ### Problem 3: Structured Reporting
 In Excel, answering "Which doctor attended the most Emergency ward patients last month?" requires complex manual filtering. In this database, it's a single SQL JOIN query across Visits, Staff, and Wards tables.
 
+
 ---
 
 ## 📁 Project Files
 
+```
 📦 HospitalKeffi-Database
-
  ┣ 📄 README.md              — This file
- 
  ┣ 📄 HospitalKeffi.db       — SQLite database file (open with SQLite Browser)
- 
  ┗ 📊 Hospital_Dashboard.html — Interactive data visualization dashboard
- 
+```
+
 📂 Full submission documents & screenshots:
 [View on Google Drive](https://drive.google.com/drive/folders/1tdVjmK43URncIhSS3lrM8Vs6YEYRINW1)
 
