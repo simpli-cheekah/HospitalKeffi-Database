@@ -116,7 +116,7 @@ In Excel, answering "Which doctor attended the most Emergency ward patients last
 📦 HospitalKeffi-Database
  ┣ 📄 README.md              — This file
  ┣ 📄 HospitalKeffi.db       — SQLite database file (open with SQLite Browser)
- ┗ 📊 Hospital_Dashboard.html — Interactive data visualization dashboard
+ ┗ 📊 index.html — Interactive data visualization dashboard
 ```
 
 📂 Full submission documents & screenshots:
