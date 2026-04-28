@@ -127,7 +127,9 @@ In Excel, answering "Which doctor attended the most Emergency ward patients last
 ## 👤 Author
 
 Nkemjika Chika
-Microsoft Elevate AI Developers Program — Cohort 1 & 2
+
+Microsoft Elevate AI Developers Program — Cohort 1
+
 DP-900: Azure Data Fundamentals
 
 ---
