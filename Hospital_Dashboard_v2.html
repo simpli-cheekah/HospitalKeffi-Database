@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Keffi Hospital — Data Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #0a0a0f;
+  --surface: #111118;
+  --surface2: #1a1a24;
+  --border: rgba(255,255,255,0.07);
+  --accent: #00d4aa;
+  --accent2: #7b61ff;
+  --accent3: #ff6b6b;
+  --accent4: #ffd93d;
+  --text: #f0f0f5;
+  --muted: #6b6b7e;
+  --muted2: #9898aa;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Ambient glow backgrounds */
+body::before {
+  content: '';
+  position: fixed;
+  top: -200px; left: -200px;
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, rgba(0,212,170,0.06) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  bottom: -200px; right: -200px;
+  width: 700px; height: 700px;
+  background: radial-gradient(circle, rgba(123,97,255,0.05) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.page {
+  position: relative;
+  z-index: 1;
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 40px 24px 60px;
+}
+
+/* ── HEADER ── */
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 48px;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.header-left {}
+
+.eyebrow {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.eyebrow::before {
+  content: '';
+  display: inline-block;
+  width: 20px; height: 2px;
+  background: var(--accent);
+  border-radius: 2px;
+}
+
+h1 {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(28px, 5vw, 42px);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -1px;
+  color: var(--text);
+}
+
+h1 span {
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.header-sub {
+  font-size: 14px;
+  color: var(--muted2);
+  margin-top: 10px;
+  font-weight: 400;
+}
+
+.header-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.tag {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: 20px;
+  border: 1px solid;
+  letter-spacing: 0.5px;
+}
+
+.tag-green { color: var(--accent); border-color: rgba(0,212,170,0.3); background: rgba(0,212,170,0.07); }
+.tag-purple { color: var(--accent2); border-color: rgba(123,97,255,0.3); background: rgba(123,97,255,0.07); }
+
+/* ── KPI ROW ── */
+.kpi-row {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12px;
+  margin-bottom: 28px;
+}
+
+@media(max-width:700px) { .kpi-row { grid-template-columns: repeat(2, 1fr); } }
+
+.kpi {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 20px 16px;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s, border-color 0.2s;
+  cursor: default;
+}
+
+.kpi:hover {
+  transform: translateY(-3px);
+  border-color: rgba(255,255,255,0.14);
+}
+
+.kpi::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 2px;
+  border-radius: 0 0 16px 16px;
+}
+
+.kpi.c1::after { background: var(--accent); }
+.kpi.c2::after { background: var(--accent2); }
+.kpi.c3::after { background: var(--accent4); }
+.kpi.c4::after { background: var(--accent3); }
+.kpi.c5::after { background: #60c8ff; }
+
+.kpi-icon {
+  font-size: 20px;
+  margin-bottom: 12px;
+  display: block;
+}
+
+.kpi-num {
+  font-family: 'Syne', sans-serif;
+  font-size: 36px;
+  font-weight: 800;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.kpi.c1 .kpi-num { color: var(--accent); }
+.kpi.c2 .kpi-num { color: var(--accent2); }
+.kpi.c3 .kpi-num { color: var(--accent4); }
+.kpi.c4 .kpi-num { color: var(--accent3); }
+.kpi.c5 .kpi-num { color: #60c8ff; }
+
+.kpi-label {
+  font-size: 11px;
+  color: var(--muted2);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+
+/* ── GRID ── */
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.grid-3 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+@media(max-width:700px) {
+  .grid-2, .grid-3 { grid-template-columns: 1fr; }
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
+}
+
+.card-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: 4px;
+  color: var(--text);
+}
+
+.card-sub {
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 22px;
+}
+
+/* ── HORIZONTAL BAR CHART ── */
+.hbar-list { display: flex; flex-direction: column; gap: 13px; }
+
+.hbar-item {}
+
+.hbar-meta {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 5px;
+}
+
+.hbar-name { font-size: 12px; color: var(--muted2); font-weight: 500; }
+.hbar-val { font-size: 12px; font-weight: 700; font-family: 'Syne', sans-serif; }
+
+.hbar-track {
+  height: 6px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.hbar-fill {
+  height: 100%;
+  border-radius: 10px;
+  width: 0;
+  transition: width 1.4s cubic-bezier(0.4,0,0.2,1);
+}
+
+/* ── DONUT RING ── */
+.donut-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 28px;
+  flex-wrap: wrap;
+}
+
+.donut-legend-v { display: flex; flex-direction: column; gap: 12px; }
+
+.leg { display: flex; align-items: center; gap: 10px; }
+.leg-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.leg-info {}
+.leg-name { font-size: 13px; font-weight: 600; color: var(--text); }
+.leg-pct { font-size: 11px; color: var(--muted); }
+
+/* ── DIAGNOSIS TABLE ── */
+.diag-list { display: flex; flex-direction: column; gap: 0; }
+
+.diag-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.diag-row:last-child { border-bottom: none; }
+
+.diag-code {
+  font-family: 'Inter', monospace;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 7px;
+  border-radius: 5px;
+  letter-spacing: 0.5px;
+  flex-shrink: 0;
+  width: 38px;
+  text-align: center;
+}
+
+.diag-name { flex: 1; font-size: 13px; color: var(--muted2); }
+
+.diag-bar-wrap {
+  width: 80px;
+  height: 4px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.diag-bar { height: 100%; border-radius: 10px; width: 0; transition: width 1.4s ease; }
+
+.diag-count {
+  font-size: 13px;
+  font-weight: 700;
+  font-family: 'Syne', sans-serif;
+  width: 16px;
+  text-align: right;
+}
+
+/* ── TIMELINE ── */
+.tl { display: flex; flex-direction: column; }
+
+.tl-item {
+  display: flex;
+  gap: 14px;
+  position: relative;
+  padding-bottom: 18px;
+}
+
+.tl-item:last-child { padding-bottom: 0; }
+
+.tl-left { display: flex; flex-direction: column; align-items: center; width: 10px; flex-shrink: 0; }
+
+.tl-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 3px;
+  position: relative;
+  z-index: 1;
+}
+
+.tl-line {
+  flex: 1;
+  width: 1px;
+  background: var(--border);
+  margin-top: 4px;
+}
+
+.tl-item:last-child .tl-line { display: none; }
+
+.tl-date {
+  font-size: 10px;
+  font-weight: 600;
+  font-family: 'Inter', monospace;
+  color: var(--muted);
+  margin-bottom: 2px;
+  letter-spacing: 0.5px;
+}
+
+.tl-name { font-size: 13px; font-weight: 600; color: var(--text); }
+.tl-detail { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+/* ── WARD GRID ── */
+.ward-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.ward-tile {
+  background: var(--surface2);
+  border-radius: 12px;
+  padding: 14px;
+  border: 1px solid var(--border);
+  transition: border-color 0.2s;
+}
+
+.ward-tile:hover { border-color: rgba(255,255,255,0.15); }
+
+.ward-tile-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+
+.ward-tile-track {
+  height: 4px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 6px;
+}
+
+.ward-tile-fill {
+  height: 100%;
+  border-radius: 10px;
+  width: 0;
+  transition: width 1.6s ease;
+}
+
+.ward-tile-cap {
+  font-size: 11px;
+  color: var(--muted);
+  display: flex;
+  justify-content: space-between;
+}
+
+.ward-tile-cap span { font-weight: 700; color: var(--muted2); }
+
+/* ── STAFF RATIO ── */
+.ratio-visual {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.ratio-dot {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+}
+
+.ratio-legend { display: flex; flex-direction: column; gap: 8px; }
+.ratio-leg { display: flex; align-items: center; gap: 8px; }
+.ratio-leg-dot { width: 8px; height: 8px; border-radius: 50%; }
+.ratio-leg-text { font-size: 12px; color: var(--muted2); }
+.ratio-leg-text strong { color: var(--text); font-size: 20px; font-family: 'Syne', sans-serif; display: block; line-height: 1; }
+
+/* ── FOOTER ── */
+.footer-strip {
+  margin-top: 40px;
+  padding: 20px 24px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.footer-strip p {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.footer-strip p strong {
+  color: var(--muted2);
+  font-weight: 600;
+}
+
+.footer-tags { display: flex; gap: 8px; flex-wrap: wrap; }
+
+.footer-tag {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.05);
+  color: var(--muted2);
+  border: 1px solid var(--border);
+  letter-spacing: 0.5px;
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-left">
+      <div class="eyebrow">DP-900 Capstone Project</div>
+      <h1>General Hospital<br><span>Keffi Database</span></h1>
+      <p class="header-sub">Relational database replacing paper & Excel · Keffi, Nasarawa State</p>
+    </div>
+    <div class="header-right">
+      <span class="tag tag-green">✦ Live Database</span>
+      <span class="tag tag-purple">Azure SQL Ready</span>
+    </div>
+  </div>
+
+  <!-- KPIs -->
+  <div class="kpi-row">
+    <div class="kpi c1">
+      <span class="kpi-icon">👥</span>
+      <div class="kpi-num">7</div>
+      <div class="kpi-label">Patients</div>
+    </div>
+    <div class="kpi c2">
+      <span class="kpi-icon">🏨</span>
+      <div class="kpi-num">6</div>
+      <div class="kpi-label">Wards</div>
+    </div>
+    <div class="kpi c3">
+      <span class="kpi-icon">👨‍⚕️</span>
+      <div class="kpi-num">7</div>
+      <div class="kpi-label">Staff</div>
+    </div>
+    <div class="kpi c4">
+      <span class="kpi-icon">📋</span>
+      <div class="kpi-num">8</div>
+      <div class="kpi-label">Visits</div>
+    </div>
+    <div class="kpi c5">
+      <span class="kpi-icon">🔬</span>
+      <div class="kpi-num">8</div>
+      <div class="kpi-label">Diagnoses</div>
+    </div>
+  </div>
+
+  <!-- ROW 1 -->
+  <div class="grid-2">
+
+    <!-- Ward Capacities -->
+    <div class="card">
+      <div class="card-title">Ward Bed Capacity</div>
+      <div class="card-sub">Total beds available across all 6 wards</div>
+      <div class="hbar-list" id="wardBars"></div>
+    </div>
+
+    <!-- Gender Split -->
+    <div class="card">
+      <div class="card-title">Patient Gender Split</div>
+      <div class="card-sub">Distribution of registered patients</div>
+      <div class="donut-center">
+        <svg width="120" height="120" viewBox="0 0 120 120">
+          <circle cx="60" cy="60" r="46" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="16"/>
+          <!-- Female 4/7 = 57.1% → dasharray = 57.1% of circumference (289) = 165 -->
+          <circle cx="60" cy="60" r="46" fill="none"
+            stroke="url(#gf)" stroke-width="16"
+            stroke-dasharray="165 124"
+            stroke-dashoffset="0"
+            transform="rotate(-90 60 60)"
+            stroke-linecap="round"/>
+          <!-- Male 3/7 = 42.9% -->
+          <circle cx="60" cy="60" r="46" fill="none"
+            stroke="url(#gm)" stroke-width="16"
+            stroke-dasharray="124 165"
+            stroke-dashoffset="-169"
+            transform="rotate(-90 60 60)"
+            stroke-linecap="round"/>
+          <defs>
+            <linearGradient id="gf" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#00d4aa"/>
+              <stop offset="100%" stop-color="#00b4d8"/>
+            </linearGradient>
+            <linearGradient id="gm" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#7b61ff"/>
+              <stop offset="100%" stop-color="#a855f7"/>
+            </linearGradient>
+          </defs>
+          <text x="60" y="55" text-anchor="middle" font-size="22" font-weight="800" font-family="Syne" fill="#f0f0f5">7</text>
+          <text x="60" y="70" text-anchor="middle" font-size="10" font-family="Inter" fill="#6b6b7e">patients</text>
+        </svg>
+        <div class="donut-legend-v">
+          <div class="leg">
+            <div class="leg-dot" style="background:linear-gradient(135deg,#00d4aa,#00b4d8)"></div>
+            <div class="leg-info">
+              <div class="leg-name" style="color:#00d4aa">Female — 4</div>
+              <div class="leg-pct">57% of patients</div>
+            </div>
+          </div>
+          <div class="leg">
+            <div class="leg-dot" style="background:linear-gradient(135deg,#7b61ff,#a855f7)"></div>
+            <div class="leg-info">
+              <div class="leg-name" style="color:#a855f7">Male — 3</div>
+              <div class="leg-pct">43% of patients</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ROW 2 -->
+  <div class="grid-3">
+
+    <!-- Diagnoses -->
+    <div class="card" style="grid-column: span 1">
+      <div class="card-title">ICD-10 Diagnoses</div>
+      <div class="card-sub">WHO standard codes used</div>
+      <div class="diag-list" id="diagList"></div>
+    </div>
+
+    <!-- Visit Timeline -->
+    <div class="card">
+      <div class="card-title">Visit Timeline</div>
+      <div class="card-sub">Recent patient activity</div>
+      <div class="tl" id="timeline"></div>
+    </div>
+
+    <!-- Staff -->
+    <div class="card">
+      <div class="card-title">Staff by Role</div>
+      <div class="card-sub">Doctors vs nurses on record</div>
+      <div class="ratio-visual" id="staffDots"></div>
+      <div class="ratio-legend">
+        <div class="ratio-leg">
+          <div class="ratio-leg-dot" style="background:#ffd93d"></div>
+          <div class="ratio-leg-text">
+            <strong style="color:#ffd93d">4</strong>
+            Doctors
+          </div>
+        </div>
+        <div class="ratio-leg" style="margin-top:4px">
+          <div class="ratio-leg-dot" style="background:#7b61ff"></div>
+          <div class="ratio-leg-text">
+            <strong style="color:#7b61ff">3</strong>
+            Nurses
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ROW 3: Ward tiles -->
+  <div class="card" style="margin-bottom:16px">
+    <div class="card-title">Ward Occupancy Overview</div>
+    <div class="card-sub">Bed capacity per ward — designed to scale with Azure SQL Database</div>
+    <div class="ward-grid" id="wardGrid"></div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer-strip">
+    <p>Built by <strong>Nkemjika Chika</strong> · Microsoft Elevate AI Developers Program · DP-900: Azure Data Fundamentals · Data Science Nigeria × Microsoft</p>
+    <div class="footer-tags">
+      <span class="footer-tag">SQLite</span>
+      <span class="footer-tag">Azure SQL</span>
+      <span class="footer-tag">ICD-10</span>
+      <span class="footer-tag">Relational DB</span>
+      <span class="footer-tag">DP-900</span>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const wardData = [
+  { name: "General Medicine", cap: 30, color: "#00d4aa" },
+  { name: "Maternity",        cap: 25, color: "#a855f7" },
+  { name: "Pediatrics",       cap: 20, color: "#7b61ff" },
+  { name: "Surgery",          cap: 15, color: "#ffd93d" },
+  { name: "Accident & Trauma",cap: 12, color: "#ff6b6b" },
+  { name: "Emergency",        cap: 10, color: "#60c8ff" },
+];
+
+const diagData = [
+  { code: "B54",  name: "Malaria",           count: 2, color: "#ff6b6b" },
+  { code: "K37",  name: "Appendicitis",      count: 1, color: "#ffd93d" },
+  { code: "Z34",  name: "Normal Pregnancy",  count: 1, color: "#00d4aa" },
+  { code: "I20",  name: "Angina Pectoris",   count: 1, color: "#a855f7" },
+  { code: "J06",  name: "Resp. Infection",   count: 1, color: "#60c8ff" },
+  { code: "T14",  name: "Trauma Injuries",   count: 1, color: "#7b61ff" },
+  { code: "O80",  name: "Normal Delivery",   count: 1, color: "#00d4aa" },
+];
+
+const tlData = [
+  { date: "05 JAN", name: "Amina Bello", detail: "Malaria · Gen. Medicine", color: "#ff6b6b" },
+  { date: "08 JAN", name: "Emeka Okafor", detail: "Appendicitis · Surgery", color: "#ffd93d" },
+  { date: "10 JAN", name: "Fatima Musa", detail: "Antenatal · Maternity", color: "#00d4aa" },
+  { date: "15 JAN", name: "Chidi Nwosu", detail: "Chest Pain · Gen. Med", color: "#a855f7" },
+  { date: "22 JAN", name: "Tunde Adeyemi", detail: "Trauma · Emergency", color: "#ff6b6b" },
+  { date: "25 JAN", name: "Grace Eze", detail: "Delivery · Maternity", color: "#60c8ff" },
+];
+
+// Ward bars
+const maxCap = 30;
+wardData.forEach(w => {
+  const pct = (w.cap / maxCap) * 100;
+  document.getElementById('wardBars').innerHTML += `
+    <div class="hbar-item">
+      <div class="hbar-meta">
+        <span class="hbar-name">${w.name}</span>
+        <span class="hbar-val" style="color:${w.color}">${w.cap} beds</span>
+      </div>
+      <div class="hbar-track">
+        <div class="hbar-fill" style="background:${w.color}" data-w="${pct}"></div>
+      </div>
+    </div>`;
+});
+
+// Diagnoses
+diagData.forEach(d => {
+  const pct = (d.count / 2) * 100;
+  document.getElementById('diagList').innerHTML += `
+    <div class="diag-row">
+      <span class="diag-code" style="background:${d.color}22;color:${d.color}">${d.code}</span>
+      <span class="diag-name">${d.name}</span>
+      <div class="diag-bar-wrap">
+        <div class="diag-bar" style="background:${d.color}" data-w="${pct}"></div>
+      </div>
+      <span class="diag-count" style="color:${d.color}">${d.count}</span>
+    </div>`;
+});
+
+// Timeline
+tlData.forEach(t => {
+  document.getElementById('timeline').innerHTML += `
+    <div class="tl-item">
+      <div class="tl-left">
+        <div class="tl-dot" style="background:${t.color}"></div>
+        <div class="tl-line"></div>
+      </div>
+      <div>
+        <div class="tl-date">${t.date} 2024</div>
+        <div class="tl-name">${t.name}</div>
+        <div class="tl-detail">${t.detail}</div>
+      </div>
+    </div>`;
+});
+
+// Staff dots
+const staff = [
+  { role: 'doctor', emoji: '👨‍⚕️', color: '#ffd93d' },
+  { role: 'doctor', emoji: '👩‍⚕️', color: '#ffd93d' },
+  { role: 'doctor', emoji: '👨‍⚕️', color: '#ffd93d' },
+  { role: 'doctor', emoji: '👩‍⚕️', color: '#ffd93d' },
+  { role: 'nurse',  emoji: '💉',    color: '#7b61ff' },
+  { role: 'nurse',  emoji: '💊',    color: '#7b61ff' },
+  { role: 'nurse',  emoji: '🩺',    color: '#7b61ff' },
+];
+staff.forEach(s => {
+  document.getElementById('staffDots').innerHTML += `
+    <div class="ratio-dot" style="background:${s.color}22;border:1px solid ${s.color}44">${s.emoji}</div>`;
+});
+
+// Ward grid
+wardData.forEach(w => {
+  const pct = (w.cap / maxCap) * 100;
+  document.getElementById('wardGrid').innerHTML += `
+    <div class="ward-tile">
+      <div class="ward-tile-name">${w.name}</div>
+      <div class="ward-tile-track">
+        <div class="ward-tile-fill" style="background:${w.color}" data-w="${pct}"></div>
+      </div>
+      <div class="ward-tile-cap">
+        <span>Capacity</span>
+        <span>${w.cap} beds</span>
+      </div>
+    </div>`;
+});
+
+// Animate all bars on load
+setTimeout(() => {
+  document.querySelectorAll('[data-w]').forEach(el => {
+    el.style.width = el.dataset.w + '%';
+  });
+}, 300);
+</script>
+</body>
+</html>
